@@ -1,0 +1,25 @@
+services:
+  mongo:
+    image: mongo:latest
+    container_name: my-mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_DB_USERNAME=${MONGO_USERNAME}
+      - MONGO_DB_PASSWORD=${MONGO_PASSWORD}
+    volumes:
+      - mongo-data:/data/db
+
+  app:
+    build: .
+    container_name: my-spring-app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mongo
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@mongo:27017/notes_db?authSource=admin
+      - SPRING_DATA_MONGODB_DATABASE=notes_db
+
+volumes:
+  mongo-data:
